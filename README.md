@@ -21,4 +21,19 @@ On a linux machine:
   
 Build results should be in folder /out
   
+
+## Run hello-world to see if it is working
+
+At a terminal, export LD_LIBRARY_PATH to Soar's code current location, for instance:
+
+	export LD_LIBRARY_PATH=~/Desktop/Soar/out
+
+Run hello world example:
+
+	python hello-world.py 
+
+You should see the following:
+
+	Hello world
+	1:    ==>S: S2 (state no-change)  
   

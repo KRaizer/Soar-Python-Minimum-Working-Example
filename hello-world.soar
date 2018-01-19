@@ -1,0 +1,7 @@
+# Prints hello world and then halts
+sp {apply*hello
+    (state <s> ^type state)
+-->
+    (write (crlf)|Hello world| (crlf))
+#    (halt)
+}
