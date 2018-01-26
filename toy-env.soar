@@ -1,0 +1,48 @@
+###
+# Initialization
+#
+
+sp {toy-env*propose*initialize-toy-env
+	(state <s> 	^superstate nil 
+			-^name)
+-->
+	(<s> ^operator <o> +)
+	(<o> ^name initialize-toy-env)}
+
+sp {toy-env*apply*initialize-toy-env
+	(state <s> ^operator.name initialize-toy-env)
+	(state <s> ^io <io>)
+	(<io> ^output-link <output-link>)
+-->
+	(<s> ^name toy-env)
+#	(<output-link> ^result 0.0)
+}
+
+######################################
+# Add inputs
+#
+sp {toy-env*propose*addup
+    	(state <s> ^io <io>)
+    	(<io> ^input-link <input-link>)    	
+	(<input-link> ^a <aval>)
+	(<input-link> ^b <bval>)
+-->
+  	(<s> ^operator <o> + =)
+	(write (crlf)|===> Soar input: | <aval> | | <bval> (crlf))
+}
+
+sp {toy-env*apply*addup
+    	(state <s> ^io <io>)
+	(<io> ^output-link <onode>)
+#	(<onode> ^result <currentresult>)
+	(<io> ^input-link <inode>)    #(<io> ^input-link <input-link>) 	
+	(<inode> ^a <aval>)
+	(<inode> ^b <bval>)
+-->
+	
+	(<onode> ^result (+ <aval> <bval>))
+	(write (crlf)|===> Soar output: | (+ <aval> <bval>) (crlf))
+
+}
+
+
