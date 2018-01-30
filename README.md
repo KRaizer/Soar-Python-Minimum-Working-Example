@@ -68,7 +68,7 @@ You should see something like this:
 	('---> Environment acted:', 10.0)
 	soar> 
 
-The goal of this exercise is just to show how to use the IO interface and perform a simple cognitive cycle inside a Soar agent.
+The goal of this exercise is to show how to use the IO interface and perform a simple cognitive cycle inside a Soar agent.
 The "toy environment" is just a function that produces two random numbers and receives a single result.
 This agent receives these numbers through "sensors", add them up, and return them through actuators.
 
@@ -76,11 +76,11 @@ This agent receives these numbers through "sensors", add them up, and return the
 
 1) Soar Manual http://soar.eecs.umich.edu/downloads/Documentation/SoarManual.pdf
 
-2) Soar Tutorials
+2) Soar Tutorials https://soar.eecs.umich.edu/articles/downloads/soar-suite/228-soar-tutorial-9-6-0
 
 3) Python Interface Example https://soar.eecs.umich.edu/articles/downloads/examples-and-unsupported/183-python-interface-example
 
-4) Python SML Interface file /Soar/build/Core/ClientSMLSWIG/Python/Python_sml_ClientInterface.py
+4) Python SML Interface file /Soar/build/Core/ClientSMLSWIG/Python/Python_sml_ClientInterface.py 
 
 
   
