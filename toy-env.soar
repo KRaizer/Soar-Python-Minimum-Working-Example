@@ -1,4 +1,4 @@
-###
+######################################
 # Initialization
 #
 
@@ -6,7 +6,7 @@ sp {toy-env*propose*initialize-toy-env
 	(state <s> 	^superstate nil 
 			-^name)
 -->
-	(<s> ^operator <o> +)
+	(<s> ^operator <o> +) #leaving '=' generates a tie impasse
 	(<o> ^name initialize-toy-env)}
 
 sp {toy-env*apply*initialize-toy-env
@@ -15,7 +15,6 @@ sp {toy-env*apply*initialize-toy-env
 	(<io> ^output-link <output-link>)
 -->
 	(<s> ^name toy-env)
-#	(<output-link> ^result 0.0)
 }
 
 ######################################
@@ -27,7 +26,7 @@ sp {toy-env*propose*addup
 	(<input-link> ^a <aval>)
 	(<input-link> ^b <bval>)
 -->
-  	(<s> ^operator <o> + =)
+  	(<s> ^operator <o>  =)
 	(write (crlf)|===> Soar input: | <aval> | | <bval> (crlf))
 }
 
@@ -39,10 +38,24 @@ sp {toy-env*apply*addup
 	(<inode> ^a <aval>)
 	(<inode> ^b <bval>)
 -->
-	
 	(<onode> ^result (+ <aval> <bval>))
 	(write (crlf)|===> Soar output: | (+ <aval> <bval>) (crlf))
+}
 
+######################################
+# WAIT OPERATOR
+# Propose wait for a state no-change
+#
+sp {top-ps*propose*wait
+   "Propose wait if there is a state no-change."
+   :default
+   (state <s> ^attribute state
+              ^choices none
+             -^superstate.name evaluate-operator
+             -^operator.name wait)
+-->
+   (<s> ^operator <o> + <)
+   (<o> ^name wait)
 }
 
 
