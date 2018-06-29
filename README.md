@@ -24,9 +24,12 @@ Build results should be in folder /out
 
 ## Run hello-world to see if it is working
 
-At a terminal, export LD_LIBRARY_PATH to Soar's code current location, for instance:
+At a terminal, export LD_LIBRARY_PATH and PYTHONPATH to Soar's code current location, for instance:
 
-	export LD_LIBRARY_PATH=~/Desktop/Soar/out
+	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/Desktop/Soar/out
+	export PYTHONPATH=$PYTHONPATH:~/Desktop/Soar/out
+
+An alternative is to copy those lines to the end of .bashrc file, so you don't have to do it every time you open a new terminal.
 
 Run hello world example:
 
