@@ -59,6 +59,8 @@ class ToyEnv(object):
 """ Main program """
 if __name__ == "__main__":
 
+    
+
     #Instantiate link to environment
     te = ToyEnv()
 
@@ -76,11 +78,23 @@ if __name__ == "__main__":
     a_value=agent.CreateFloatWME(input_link, "a", -1.0)
     b_value=agent.CreateFloatWME(input_link, "b", -1.0)
 
+
+#    testWME=agent.CreateFloatWME(input_link, "test", -1.0)
+#    agent.DestroyWME(testWME)
+
+
+
     #Get output link
     output_link=agent.GetOutputLink()
 
+#    testWME=agent.CreateFloatWME(output_link, "test", -1.0)
+#    agent.DestroyWME(testWME)
+
     ### Start Soar cognitive cycle ###
     #
+
+
+    firstRun = True
     for i in range(0,3): # replace by a "while True:" to run forever
         print(" ------------- Soar cycle: ",i," ------------- ")
     # 1) sense the environment
@@ -92,15 +106,25 @@ if __name__ == "__main__":
 
     # 3) make soar think about it
         result=0
-        run_result=agent.RunSelf(1)    #Run agent for one step
-    
+#        run_result=agent.RunSelf(1)    #Run agent for one step
+        run_result=agent.RunSelfTilOutput()    #Run agent until output
+        if(firstRun): #TODO Verify why we need this
+            run_result=agent.RunSelfTilOutput()
+            firstRun=False
     # 4) get results from soar
-        output_link=agent.GetOutputLink()## returns an Identifier
+        output_link=agent.GetOutputLink()# returns an Identifier
         if output_link!= None:
-            result_output_wme = output_link.FindByAttribute("result", 0) # returns a WMElement of the form (<output_link> ^result <val>)
+            result_output_wme = output_link.FindByAttribute("add_result", 0) 
             result=None
             if result_output_wme != None:
                 result = float(result_output_wme.GetValueAsString())
+
+
+
+
+
+
+
 
     #5) send result to environment
         te.set_actuators(result) 
@@ -113,3 +137,36 @@ if __name__ == "__main__":
     #Close agent and kernel
     kernel.DestroyAgent(agent)
     kernel.Shutdown()
+
+
+
+## SANDBOX #######
+
+#        resultWME = agent.CreateIdWME(output_link, "result")
+#        resultValueWME=agent.CreateFloatWME(resultWME, "value", -1.0)
+
+#        print("resultWME: ",resultWME.IsIdentifier())
+#        resultWME.AddStatusComplete() # A
+
+#        found_resultWME=output_link.FindByAttribute("result", 0)
+#        print("found_resultWME: ",found_resultWME.IsIdentifier())
+#        found_resultWME.AddStatusComplete() #B
+
+
+
+#        resultStatusWME=agent.CreateStringWME(resultWME, "status", "ongoing")
+
+
+
+#            test_result_output_wme = output_link.FindByAttribute("result", 0)
+#            test_result_output_wme.AddStatusComplete()
+            
+
+#            test_result=None
+#            if test_result_output_wme != None:
+                #test_val_wme = test_result_output_wme.FindByAttribute("value", 0)
+                #test_status_wme = test_result_output_wme.FindByAttribute("status", 0)
+                #test_status = test_status_wme.GetValueAsString()
+                #print("test_status: ",test_status)
+
+#result_output_wme.ConvertToIdentifier()

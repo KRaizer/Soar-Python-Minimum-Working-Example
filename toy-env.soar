@@ -3,44 +3,75 @@
 #
 
 sp {toy-env*propose*initialize-toy-env
-	(state <s> 	^superstate nil 
-			-^name)
+	(state <s> 	^superstate nil -^name)
 -->
-	(<s> ^operator <o> +) #leaving '=' generates a tie impasse
-	(<o> ^name initialize-toy-env)}
+	(<s> ^operator <o> + =) 
+	(<o> ^name initialize-toy-env)
+}
 
 sp {toy-env*apply*initialize-toy-env
 	(state <s> ^operator.name initialize-toy-env)
-	(state <s> ^io <io>)
-	(<io> ^output-link <output-link>)
+    (<s> ^io.output-link <ol>)
 -->
 	(<s> ^name toy-env)
+    (<ol> ^add_result 0)
+	(write (crlf)|===> Agent initialized | (crlf))
 }
 
 ######################################
 # Add inputs
 #
 sp {toy-env*propose*addup
-    	(state <s> ^io <io>)
-    	(<io> ^input-link <input-link>)    	
-	(<input-link> ^a <aval>)
-	(<input-link> ^b <bval>)
+    (state <s> ^name toy-env)
+    (<s> ^io.input-link.a <aval>)
+    (<s> ^io.input-link.b <bval>)
 -->
-  	(<s> ^operator <o>  =)
-	(write (crlf)|===> Soar input: | <aval> | | <bval> (crlf))
+  	(<s> ^operator <o>  + =)
+	(<o> ^name addup)
 }
 
 sp {toy-env*apply*addup
-    	(state <s> ^io <io>)
-	(<io> ^output-link <onode>)
-#	(<onode> ^result <currentresult>)
-	(<io> ^input-link <inode>)    #(<io> ^input-link <input-link>) 	
-	(<inode> ^a <aval>)
-	(<inode> ^b <bval>)
+    (state <s> ^operator.name addup)
+    (<s> ^io.input-link.a <aval>)
+    (<s> ^io.input-link.b <bval>)
+    (<s> ^io.output-link <ol>)
+    (<ol> ^add_result <ar>)
+
 -->
-	(<onode> ^result (+ <aval> <bval>))
+	(<ol> ^add_result (+ <aval> <bval>)) 
+    (<ol> ^add_result <ar> -)
 	(write (crlf)|===> Soar output: | (+ <aval> <bval>) (crlf))
+
 }
+
+
+######################################
+# Monitors Addup completion
+#
+
+#sp {toy-env*propose*remove-completed
+#    (state <s> 	^superstate nil)
+#    (<s> ^io.input-link <il>)
+#    (<il> ^add_result_status complete)
+#    (<s> ^io.output-link <ol>)
+#    (<ol> ^add_result <ost>)
+#
+#-->
+#    (<s> ^operator.name remove-completed + )
+#}
+#
+#sp {toy-env*apply*remove-completed
+#    (state <s> ^io.output-link <ol>)
+#    (<ol> ^add_result <ost>)
+#    (state <s> ^operator.name remove-completed)
+#
+#-->
+##    (<s> ^operator.name remove-completed)
+#    (<ol> ^add_result <ost> -)
+#    (write (crlf)|===> Destroy: | <ost> (crlf))
+#}
+
+
 
 ######################################
 # WAIT OPERATOR
