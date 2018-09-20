@@ -1,8 +1,6 @@
-#TODO In this script I'm trying to improve the output reading function by using callbacks
-
-
 """Making sure we are running the right version of python"""
 import sys
+import time
 if sys.version_info[0] >= 3:
     raise "Must be using Python 2"
 
@@ -12,6 +10,8 @@ export LD_LIBRARY_PATH=~/Desktop/Soar/out
 """
 from os import environ as env, fsync
 import sys
+from random import *
+
 if "DYLD_LIBRARY_PATH" in env:
 	LIB_PATH = env["DYLD_LIBRARY_PATH"]
 elif "LD_LIBRARY_PATH" in env:
@@ -25,24 +25,9 @@ import Python_sml_ClientInterface as sml
 
 """ Callback functions to help us see what is happening inside agent's mind"""
 def register_print_callback(kernel, agent, function, user_data=None):
-    print("register_print_callback")
-    agent.RegisterForPrintEvent(sml.smlEVENT_PRINT, function, user_data)
+	agent.RegisterForPrintEvent(sml.smlEVENT_PRINT, function, user_data)
 def callback_print_message(mid, user_data, agent, message):
 	print(message.strip())
-
-#def register_output_callback(kernel, agent, function, user_data=None):
-#	print("register_output_callback")
-#	#agent.RegisterForRunEvent(sml.smlEVENT_AFTER_OUTPUT_PHASE, function, user_data)
-#	agent.RegisterForOutputNotification(function, user_data, addToBack=True)
-#def callback_output_message(mid, user_data, agent, message):
-#	print("callback_output_message")
-
-def register_output_change_callback(kernel, agent, function, user_data=None):
-	print("register_output_change_callback")
-	kernel.RegisterForUpdateEvent(sml.smlEVENT_AFTER_ALL_GENERATED_OUTPUT, function, user_data)
-def callback_output_change_message(mid, user_data, agent, message):
-	print("callback_output_change_message: ",message)
-
 
 """ Client to interact with agent's mind"""
 def cli(agent):
@@ -52,7 +37,18 @@ def cli(agent):
 			print(agent.ExecuteCommandLine(cmd).strip())
 		cmd = raw_input("soar> ")
 
-from random import *
+""" Gets an output value from output link for a given attribute """
+def getOutput(attribute):
+    aa=agent.ExecuteCommandLine("print i3").replace("(", "").replace(")", "") 
+    bb=aa.split(" ")
+    attribute="^"+attribute
+    value=None
+    if attribute in aa:
+        pos=bb.index(attribute)
+        value=bb[pos+1]
+    return value
+
+
 class ToyEnv(object):
     """
     A very simple 'environment': sensors return two random numbers and expects a single number as actuation.
@@ -87,11 +83,8 @@ if __name__ == "__main__":
     agent = kernel.CreateAgent("agent")
     register_print_callback(kernel, agent, callback_print_message, None)
 
-#    register_output_callback(kernel, agent, callback_output_message, None) #produces exception
-    register_output_change_callback(kernel, agent, callback_output_change_message, None)
-
     #Load soar sources
-    agent.ExecuteCommandLine("source toy-env.soar")
+    agent.ExecuteCommandLine("source toy-env-multitask.soar")
 
     #Get input link and create input  structure
     input_link=agent.GetInputLink()
@@ -99,21 +92,11 @@ if __name__ == "__main__":
     a_value=agent.CreateFloatWME(input_link, "a", -1.0)
     b_value=agent.CreateFloatWME(input_link, "b", -1.0)
 
-
-#    testWME=agent.CreateFloatWME(input_link, "test", -1.0)
-#    agent.DestroyWME(testWME)
-
-
-
     #Get output link
     output_link=agent.GetOutputLink()
 
-#    testWME=agent.CreateFloatWME(output_link, "test", -1.0)
-#    agent.DestroyWME(testWME)
-
     ### Start Soar cognitive cycle ###
     #
-
 
     firstRun = True
     for i in range(0,3): # replace by a "while True:" to run forever
@@ -122,6 +105,7 @@ if __name__ == "__main__":
         sense=te.get_sensors()
 
     # 2) push senses to soar
+        
         a_value.Update(sense[0])
         b_value.Update(sense[1])
 
@@ -129,29 +113,26 @@ if __name__ == "__main__":
         result=0
 #        run_result=agent.RunSelf(1)    #Run agent for one step
         run_result=agent.RunSelfTilOutput()    #Run agent until output
-        if(firstRun): #TODO Verify why we need this
+#        cli(agent)
+        if(firstRun): #First run for initialization
             run_result=agent.RunSelfTilOutput()
-            firstRun=False
+            firstRun=False            
+            
     # 4) get results from soar
         output_link=agent.GetOutputLink()# returns an Identifier
         if output_link!= None:
             result_output_wme = output_link.FindByAttribute("add_result", 0) 
-            result=None
+          #  result_sub_output_wme = output_link.FindByAttribute("sub_result", 0)
+            result=[]
             if result_output_wme != None:
-                result = float(result_output_wme.GetValueAsString())
-
-
-
-
-
-
-
+                result.append(float(result_output_wme.GetValueAsString()))
+              #  result.append(float(result_sub_output_wme.GetValueAsString()))
 
     #5) send result to environment
         te.set_actuators(result) 
 
-    #
-    ### End Soar cognitive cycle###
+#    value=getOutput("add_result") #TODO testing alternative to agent.GetOutputLink()
+#    print(value)
 
     cli(agent) #open client to interact with agent
 
@@ -191,3 +172,11 @@ if __name__ == "__main__":
                 #print("test_status: ",test_status)
 
 #result_output_wme.ConvertToIdentifier()
+
+#    #the output of "print s1" should contain "^rhstest success"
+#    if kernel.ExecuteCommandLine("print s1", "Soar1").find("^rhstest success") == -1:
+#	    print >> sys.stderr, "\nRHS test FAILED"
+#	    sys.exit(1)
+
+#    testWME=agent.CreateFloatWME(input_link, "test", -1.0)
+#    agent.DestroyWME(testWME)

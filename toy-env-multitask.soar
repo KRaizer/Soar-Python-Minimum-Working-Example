@@ -1,0 +1,89 @@
+######################################
+# Initialization
+#
+
+sp {toy-env*propose*initialize-toy-env
+	(state <s> 	^superstate nil -^name)
+-->
+	(<s> ^operator <o> + ) 
+	(<o> ^name initialize-toy-env)
+}
+
+sp {toy-env*apply*initialize-toy-env
+	(state <s> ^operator.name initialize-toy-env)
+    (<s> ^io.output-link <ol>)
+-->
+	(<s> ^name toy-env)
+    (<ol> ^add_result 0)
+    (<ol> ^sub_result 0)
+	(write (crlf)|===> Agent initialized | (crlf))
+}
+
+#####################################
+# Propose operators
+# Multiple productions can fire at the same time. 
+# But only one operator can be selected at each time.
+#
+
+sp {toy-env*propose*addsub
+    (state <s> ^name toy-env)
+    (<s> ^io.input-link.a <aval>)
+    (<s> ^io.input-link.b <bval>)
+-->
+  	(<s> ^operator <o>  +)
+	(<o> ^name addsub) 
+    (write (crlf)|===> Proposing addsub | (crlf))
+}
+
+#####################################
+# Apply operators
+#
+
+######################################
+# Add inputs
+#
+sp {toy-env*apply*addup
+    (state <s> ^operator.name addsub)
+    (<s> ^io.input-link.a <aval>)
+    (<s> ^io.input-link.b <bval>)
+    (<s> ^io.output-link <ol>)
+    (<ol> ^add_result <ar>) #Creates multiplicity? i.e. this production acts twice?
+
+-->
+	(<ol> ^add_result (+ <aval> <bval>)) 
+    (<ol> ^add_result <ar> -) #Removes previous results
+	(write (crlf)|===> Soar add output: | (+ <aval> <bval>) (crlf))
+}
+
+######################################
+# Subtract inputs
+#
+sp {toy-env*apply*sub
+    (state <s> ^operator.name addsub)
+    (<s> ^io.input-link.a <aval>)
+    (<s> ^io.input-link.b <bval>)
+    (<s> ^io.output-link <ol>)
+    (<ol> ^sub_result <ar>)
+-->
+	(<ol> ^sub_result (- <aval> <bval>)) 
+    (<ol> ^sub_result <ar> -) #Removes previous results
+	(write (crlf)|===> Soar sub output: | (- <aval> <bval>) (crlf))
+}
+
+######################################
+# WAIT OPERATOR
+# Propose wait for a state no-change
+#
+sp {top-ps*propose*wait
+   "Propose wait if there is a state no-change."
+   :default
+   (state <s> ^attribute state
+              ^choices none
+             -^superstate.name evaluate-operator
+             -^operator.name wait)
+-->
+   (<s> ^operator <o> + <)
+   (<o> ^name wait)
+}
+
+
