@@ -7,9 +7,14 @@ On a linux machine:
 
 1) Install java OpenJDK v8
 
-2) Install python 2.7
+2) Install python 2 and python 3 
+2.1) Make python 3 your default option by adding this to .bashrc:
+
+	alias python=python3
 
 3) Install swig
+	
+	sudo apt install swig
 
 4) Clone Soar from github: 
 
@@ -17,7 +22,13 @@ On a linux machine:
 
 5) At Soar's root folder, run python build script: 
 
+If you want to use python 2, run this:
+
 	python scons/scons.py sml_python
+
+However, if you want to use python 3, run the following:
+
+	python2 scons/scons.py sml_python --python=/usr/bin/python3
   
 Build results should be in folder /out
   
@@ -84,6 +95,8 @@ This agent receives these numbers through "sensors", add them up, and return the
 3) Python Interface Example https://soar.eecs.umich.edu/articles/downloads/examples-and-unsupported/183-python-interface-example
 
 4) Python SML Interface file /Soar/build/Core/ClientSMLSWIG/Python/Python_sml_ClientInterface.py 
+
+5) pysoarlib https://github.com/amininger/pysoarlib
 
 
   
